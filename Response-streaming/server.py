@@ -13,7 +13,7 @@ import helloworld_pb2_grpc
 
 # from helloworld_pb2 import HelloRequest, HelloReply
 
-class HelloWorldStreamingServicer(helloworld_pb2_grpc.GreeterServicer):
+class ResponseStreamingServicer(helloworld_pb2_grpc.GreeterServicer):
     
     async def SayHelloStreamReply(self, request: helloworld_pb2.HelloRequest, context: grpc.aio.ServicerContext) -> helloworld_pb2.HelloReply:
         print(f"Received request from: {request.name}")
@@ -28,7 +28,7 @@ async def server():
     port="50051"
     server=grpc.aio.server()
 
-    helloworld_pb2_grpc.add_GreeterServicer_to_server(HelloWorldStreamingServicer(),server)
+    helloworld_pb2_grpc.add_GreeterServicer_to_server(ResponseStreamingServicer(),server)
 
     server.add_insecure_port(f'[::]:{port}')
     await server.start()

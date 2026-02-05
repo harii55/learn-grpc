@@ -11,7 +11,7 @@ import grpc
 from concurrent import futures
 import asyncio
 
-class HelloWorldServicer(helloworld_pb2_grpc.GreeterServicer):
+class UnaryServicer(helloworld_pb2_grpc.GreeterServicer):
    
     async def SayHello(self, request, context: grpc.aio.ServicerContext):
 
@@ -30,7 +30,7 @@ async def serve():
     server=grpc.aio.server()  
 
     # register the servicer
-    helloworld_pb2_grpc.add_GreeterServicer_to_server(HelloWorldServicer(), server)
+    helloworld_pb2_grpc.add_GreeterServicer_to_server(UnaryServicer(), server)
 
     # bind to port
     server.add_insecure_port(f'[::]:{port}')
