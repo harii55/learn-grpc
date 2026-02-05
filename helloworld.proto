@@ -6,6 +6,8 @@ service Greeter {
 
   rpc SayHelloStreamReply (HelloRequest) returns (stream HelloReply) {}
 
+  rpc SayHelloStreamRequest (stream HelloRequest) returns (HelloReply) {}
+
   rpc SayHelloBidiStream (stream HelloRequest) returns (stream HelloReply) {}
 }
 
