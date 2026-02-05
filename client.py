@@ -1,12 +1,12 @@
 import grpc
 import helloworld_pb2
 import helloworld_pb2_grpc
+import asyncio
 
-def run():
+async def run():
     # create a channel to the server
-    channel = grpc.insecure_channel('localhost:50051')
-
-    with channel:   
+    async with grpc.aio.insecure_channel('localhost:50051') as channel:
+ 
         # create a stub (client)
         stub = helloworld_pb2_grpc.GreeterStub(channel)
 
@@ -14,9 +14,9 @@ def run():
         request = helloworld_pb2.HelloRequest(name='Carly')
 
         # make the call
-        response = stub.SayHello(request)
+        response = await stub.SayHello(request)
 
-        print(f"Greeter client received: {response.message}")
+    print(f"Greeter client received: {response.message}")
 
 if __name__ == "__main__":
-    run()
+    asyncio.run(run())
