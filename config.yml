@@ -1,28 +1,4 @@
-services:
-  service-1:
-    name: "Simple RPC"
-    folder: "Simple RPC"
-    port: 8001      
-    servicer_module: "Simple RPC.servicer"
-    servicer_class: "UnaryServicer"
-    
-  service-2:
-    name: "Response Streaming"
-    folder: "Response-streaming"
-    port: 8002
-    servicer_module: "Response-streaming.servicer"
-    servicer_class: "ResponseStreamingServicer"
-    
-  service-3:
-    name: "Request Streaming"
-    folder: "Request-streaming"
-    port: 8003
-    servicer_module: "Request-streaming.servicer"
-    servicer_class: "RequestStreamingServicer"
-    
-  service-4:
-    name: "Bidirectional Streaming"
-    folder: "Bidirectional-streaming"
-    port: 8004
-    servicer_module: "Bidirectional-streaming.servicer"
-    servicer_class: "BidirectionalStreamingServicer"
+identity: "response_streaming"   
+port: 50051
+
+# Options: unary, response_streaming, request_streaming, bidi_streaming
