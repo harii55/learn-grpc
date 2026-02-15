@@ -1,7 +1,6 @@
 import grpc
 import importlib
 import helloworld_pb2_grpc
-import sys
 import asyncio
 import signal
 
@@ -50,18 +49,5 @@ async def run_server(module_path, class_name, port):
         servicer = load_servicer(module_path, class_name)
         runner = Server(servicer, port)
         await runner.start()
-
-
-if __name__ == "__main__":
-    # Example: python server_runner.py Simple-RPC.servicer UnaryServicer 50051
-    if len(sys.argv) != 4:
-        print("Usage: python server_runner.py <module> <class> <port>")
-        sys.exit(1)
-    
-    module = sys.argv[1]
-    cls = sys.argv[2]
-    port = sys.argv[3]
-    
-    asyncio.run(run_server(module, cls, port))
 
 
