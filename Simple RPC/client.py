@@ -1,18 +1,25 @@
+import grpc
+import asyncio
 import os
 import sys
+import yaml
 
-current = os.path.dirname(os.path.realpath(__file__))
-parent = os.path.dirname(current)
-sys.path.append(parent)
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import grpc
 import helloworld_pb2
 import helloworld_pb2_grpc
-import asyncio
+
+def load_config():
+    with open("../config.yml", "r") as f:
+        return yaml.safe_load(f)
 
 async def run():
+    config = load_config()
+    port = config['services']['service-1']['port']
+
     # create a channel to the server
-    async with grpc.aio.insecure_channel('localhost:50051') as channel:
+    async with grpc.aio.insecure_channel(f'localhost:{port}') as channel:
  
         # create a stub (client)
         stub = helloworld_pb2_grpc.GreeterStub(channel)

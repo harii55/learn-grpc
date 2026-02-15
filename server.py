@@ -3,6 +3,7 @@ import importlib
 import helloworld_pb2_grpc
 import sys
 import asyncio
+import signal
 
 
 class Server:
@@ -22,11 +23,18 @@ class Server:
         await self.server.start()
         print(f"Server started with {self.servicer_class.__name__} on port {self.port}")
         
+        # Setup signal handlers for graceful shutdown
+        loop = asyncio.get_event_loop()
+        for sig in (signal.SIGTERM, signal.SIGINT):
+            loop.add_signal_handler(sig, lambda: asyncio.create_task(self.stop()))
+        
         await self.server.wait_for_termination()
 
     async def stop(self):
         if self.server:
-            await self.server.stop(grace=5)
+            print("\nShutting down server gracefully...")
+            await self.server.stop(grace=2)
+            print("Server stopped")
 
 
 def load_servicer(module_path, class_name):
