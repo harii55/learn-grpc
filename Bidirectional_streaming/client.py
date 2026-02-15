@@ -25,7 +25,7 @@ async def run():
             await asyncio.sleep(1)
 
     config = load_config()
-    port = config['services']['service-4']['port']
+    port = config.get("port")
 
 
     async with grpc.aio.insecure_channel(f'localhost:{port}') as channel:

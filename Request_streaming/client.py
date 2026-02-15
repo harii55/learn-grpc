@@ -15,22 +15,31 @@ def load_config():
         return yaml.safe_load(f)
 
 async def run():
+
+    async def generate_msg():
+        for i in range(5):
+            print(f"Sent this name via req: Carly {i}")
+            yield helloworld_pb2.HelloRequest(
+                name = f"Carly {i}"
+            )
+            await asyncio.sleep(1)
+
+
     config = load_config()
-    port = config['services']['service-2']['port']
+    port = config.get("port")
 
     async with grpc.aio.insecure_channel(f'localhost:{port}') as channel:
         stub = helloworld_pb2_grpc.GreeterStub(channel)
-              
-        request = helloworld_pb2.HelloRequest(name='Carly')
 
-        response_stream = stub.SayHelloStreamReply(request)
+        req_iter = generate_msg()
 
-        while True:
-            response = await response_stream.read()
-            if response == grpc.aio.EOF:
-                break
-            print("Client just received this: " + response.message)
+        res = await stub.SayHelloStreamRequest(req_iter)
+
+
+        print(res.message)
 
 
 if __name__ == "__main__":
     asyncio.run(run())
+
+        

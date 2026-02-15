@@ -1,36 +1,49 @@
+from logging import config
 import yaml
 import asyncio
-from server import run_server
+from server import Server
 import sys
+
+from Simple_RPC.servicer import UnaryServicer
+from Response_streaming.servicer import ResponseStreamingServicer
+from Request_streaming.servicer import RequestStreamingServicer
+from Bidirectional_streaming.servicer import BidirectionalStreamingServicer
+
+possible_grpc_deployments = {
+    "unary": UnaryServicer,
+    "response_streaming": ResponseStreamingServicer,
+    "request_streaming": RequestStreamingServicer,
+    "bidi_streaming": BidirectionalStreamingServicer
+}
 
 def load_config():
     with open("config.yml", "r") as f:
         return yaml.safe_load(f)
     
-async def deploy_service(service_name):
+async def deploy_service():
     config = load_config()
     
-    service = config["services"].get(service_name)
-    if not service:
-        print(f"Service {service_name} not found in config.")
-        return
+    identity = config.get("identity")
+    port = config.get("port")
     
-    print(f"Deploying {service_name} on port {service['port']}...")
+    servicer_class = possible_grpc_deployments.get(identity)
 
-    await run_server(service["servicer_module"], service["servicer_class"], service["port"] )
+    if not servicer_class:
+        print(f"Error: Identity '{identity}' not found in registry.")
+        sys.exit(1)
 
+    servicer_obj = servicer_class()
+
+    print(f"Deploying {identity} on port {port}...")
+
+    try:
+        runner = Server(servicer_obj, port)
+        await runner.start()
+    except asyncio.CancelledError:
+        await runner.stop()
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python deploy.py <service-name>")
-        print("\nAvailable services:")
-        config = load_config()
-        for svc_name, svc_config in config['services'].items():
-            print(f"  - {svc_name}: {svc_config['name']} (port {svc_config['port']})")
-        sys.exit(1)
-    
-    service_name = sys.argv[1]
-    asyncio.run(deploy_service(service_name))
+    asyncio.run(deploy_service())
 
 
 if __name__ == "__main__":
