@@ -1,6 +1,7 @@
-from logging import config
 import yaml
 import asyncio
+import os
+from dotenv import load_dotenv
 from server import Server
 import sys
 
@@ -17,8 +18,16 @@ possible_grpc_deployments = {
 }
 
 def load_config():
+
+    load_dotenv()
+    
     with open("config.yml", "r") as f:
-        return yaml.safe_load(f)
+        config_content = f.read()
+    
+    # Substitute environment variables in config.yml
+    config_content = os.path.expandvars(config_content)
+    
+    return yaml.safe_load(config_content)
     
 async def deploy_service(servicer_obj, port, identity):
     
@@ -33,7 +42,9 @@ async def deploy_service(servicer_obj, port, identity):
 def main():
     config = load_config()
     
-    identity = config.get("identity")    
+    identity = config.get("identity") or "unary"
+    port = config.get("port") or 50051
+    
     servicer_class = possible_grpc_deployments.get(identity)
 
     if not servicer_class:
@@ -42,7 +53,7 @@ def main():
 
     servicer_obj = servicer_class()
 
-    asyncio.run(deploy_service(servicer_obj, config.get("port"), identity))
+    asyncio.run(deploy_service(servicer_obj, port, identity))
 
 
 if __name__ == "__main__":
