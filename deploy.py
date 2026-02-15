@@ -20,20 +20,8 @@ def load_config():
     with open("config.yml", "r") as f:
         return yaml.safe_load(f)
     
-async def deploy_service():
-    config = load_config()
+async def deploy_service(servicer_obj, port, identity):
     
-    identity = config.get("identity")
-    port = config.get("port")
-    
-    servicer_class = possible_grpc_deployments.get(identity)
-
-    if not servicer_class:
-        print(f"Error: Identity '{identity}' not found in registry.")
-        sys.exit(1)
-
-    servicer_obj = servicer_class()
-
     print(f"Deploying {identity} on port {port}...")
 
     try:
@@ -43,7 +31,18 @@ async def deploy_service():
         await runner.stop()
 
 def main():
-    asyncio.run(deploy_service())
+    config = load_config()
+    
+    identity = config.get("identity")    
+    servicer_class = possible_grpc_deployments.get(identity)
+
+    if not servicer_class:
+        print(f"Error: Identity '{identity}' not found in registry.")
+        sys.exit(1)
+
+    servicer_obj = servicer_class()
+
+    asyncio.run(deploy_service(servicer_obj, config.get("port"), identity))
 
 
 if __name__ == "__main__":
