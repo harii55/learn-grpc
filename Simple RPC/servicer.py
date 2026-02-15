@@ -8,8 +8,6 @@ sys.path.append(parent)
 import helloworld_pb2
 import helloworld_pb2_grpc
 import grpc
-from concurrent import futures
-import asyncio
 
 class UnaryServicer(helloworld_pb2_grpc.GreeterServicer):
    
@@ -23,23 +21,3 @@ class UnaryServicer(helloworld_pb2_grpc.GreeterServicer):
             message=f"Hello, {request.name}!")
     
 
-
-async def serve():
-    # create a grpc server
-    port="50051"
-    server=grpc.aio.server()  
-
-    # register the servicer
-    helloworld_pb2_grpc.add_GreeterServicer_to_server(UnaryServicer(), server)
-
-    # bind to port
-    server.add_insecure_port(f'[::]:{port}')
-    await server.start()
-
-    print(f"Server started, listening on {port}")
-
-    # keep the server running
-    await server.wait_for_termination()
-
-if __name__ == "__main__":
-    asyncio.run(serve())
