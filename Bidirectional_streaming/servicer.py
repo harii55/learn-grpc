@@ -1,10 +1,3 @@
-import os,sys
-
-current = os.path.dirname(os.path.realpath(__file__))
-parent = os.path.dirname(current)
-sys.path.append(parent)
-
-import grpc
 import asyncio
 import helloworld_pb2
 import helloworld_pb2_grpc
@@ -62,27 +55,6 @@ class BidirectionalStreamingServicer(helloworld_pb2_grpc.GreeterServicer):
         # (If task1 was already finished, this line does nothing, so it's safe).
 
 
-async def server():
-    port="50051"
-    server=grpc.aio.server()
-
-    helloworld_pb2_grpc.add_GreeterServicer_to_server(BidirectionalStreamingServicer(),server)
-
-    server.add_insecure_port(f'[::]:{port}')
-    await server.start()
-
-    print(f"Responce Streaming Server started, listening on {port}")
-
-    await server.wait_for_termination()
-
-if __name__ == "__main__":
-    asyncio.run(server())
-
-
-
-
-
-
 
 # Why Need Queue? 
 
@@ -99,24 +71,5 @@ if __name__ == "__main__":
     #             await asyncio.sleep(2)
 
     
-
-
-
-async def server():
-    port="50051"
-    server=grpc.aio.server()
-
-    helloworld_pb2_grpc.add_GreeterServicer_to_server(BidirectionalStreamingServicer(),server)
-
-    server.add_insecure_port(f'[::]:{port}')
-    await server.start()
-
-    print(f"Responce Streaming Server started, listening on {port}")
-
-    await server.wait_for_termination()
-
-if __name__ == "__main__":
-    asyncio.run(server())
-       
 
 

@@ -1,0 +1,4 @@
+identity: "${SERVICE_IDENTITY}"  
+port: ${SERVICE_PORT}             
+
+# Options: unary, response_streaming, request_streaming, bidi_streaming

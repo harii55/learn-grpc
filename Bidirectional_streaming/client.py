@@ -1,13 +1,29 @@
-import os,sys
-
-current = os.path.dirname(os.path.realpath(__file__))
-parent = os.path.dirname(current)
-sys.path.append(parent)
-
 import grpc
 import asyncio
+import os
+import sys
+import yaml
+from dotenv import load_dotenv
+
+
+
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import helloworld_pb2
 import helloworld_pb2_grpc
+
+def load_config():
+
+    load_dotenv()
+    
+    with open("../config.yml", "r") as f:
+        config_content = f.read()
+    
+    # Substitute environment variables in config.yml
+    config_content = os.path.expandvars(config_content)
+    
+    return yaml.safe_load(config_content)
 
 async def run():
 
@@ -19,8 +35,11 @@ async def run():
             )
             await asyncio.sleep(1)
 
+    config = load_config()
+    port = config.get("port")
 
-    async with grpc.aio.insecure_channel('localhost:50051') as channel:
+
+    async with grpc.aio.insecure_channel(f'localhost:{port}') as channel:
         stub = helloworld_pb2_grpc.GreeterStub(channel)
 
         req_iter = generate_msg()
