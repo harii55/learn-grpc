@@ -42,8 +42,8 @@ async def deploy_service(servicer_obj, port, identity):
 def main():
     config = load_config()
     
-    identity = config.get("identity") or "unary"
-    port = config.get("port") or 50051
+    identity = config.get("identity")
+    port = config.get("port")
     
     servicer_class = possible_grpc_deployments.get(identity)
 
